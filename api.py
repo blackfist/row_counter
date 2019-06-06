@@ -66,6 +66,5 @@ def store_record_count():
     })
 
 
-@app.route()
 if __name__ == "__main__":
     app.run()
