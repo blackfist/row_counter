@@ -16,7 +16,7 @@ db = SQLAlchemy(app)
 class ExportRecord(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.String(18))
-    count = db.Column(db.Numeric(1, 6))
+    count = db.Column(db.SmallInteger)
 
 
 @app.route("/", methods=["GET"])

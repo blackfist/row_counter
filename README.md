@@ -27,4 +27,8 @@ From the directory where you've got your source code (make sure you've already l
 heroku apps:create
 heroku addons:create heroku-postgresql
 git push heroku master
+heroku run bash
+python
+from api import db
+db.create_all()
 ```
