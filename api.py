@@ -6,6 +6,7 @@ import json
 import os
 import sys
 from statistics import mean, stdev
+import random
 
 load_dotenv()
 app = flask.Flask(__name__)
@@ -77,22 +78,28 @@ def store_record_count():
 @app.route("/records/<user_id>", methods=['GET'])
 def get_record_boundary(user_id):
     db_results = ExportRecord.query.filter_by(user_id=user_id).all()
-    raw_counts = [record.count for record in db_results]
+    raw_counts = [record.count * (1 + random.random())
+                  for record in db_results]
 
     # If the user has not been seen before then there might be no records. So return the minimum allowed
-    if len(raw_counts) == 0:
+    # variance needs at least two data points
+    if len(raw_counts) < 2:
         return jsonify({
             "status": "success",
-            "max_allowed": 10
+            "max_allowed": 10,
+            "mutated_mean": "not calculated",
+            "mutated_stdev": "not calculated"
         })
 
     # Calculate the mean and std deviation of this user's previous activity
-    mean = mean(raw_counts)
-    stdev = stdev(raw_counts)
-    ceiling = round(mean + (2*stdev))
+    user_mean = mean(raw_counts)
+    user_stdev = stdev(raw_counts)
+    ceiling = round(user_mean + (2*user_stdev))
     return jsonify({
         "status": "success",
-        "max_allowed": ceiling
+        "max_allowed": ceiling,
+        "mutated_mean": user_mean,
+        "mutated_stdev": user_stdev
     })
 
 
