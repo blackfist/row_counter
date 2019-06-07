@@ -11,6 +11,7 @@ import random
 load_dotenv()
 app = flask.Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv("DATABASE_URL")
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 minimum_allowed = os.getenv("MINIMUM_ALLOWED", "10")
 try:
@@ -77,6 +78,7 @@ def store_record_count():
 
 @app.route("/records/<user_id>", methods=['GET'])
 def get_record_boundary(user_id):
+    print(request.headers)
     db_results = ExportRecord.query.filter_by(user_id=user_id).all()
     raw_counts = [record.count * (1 + random.random())
                   for record in db_results]
